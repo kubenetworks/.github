@@ -1,6 +1,30 @@
+![kubevpn](https://raw.githubusercontent.com/KubeNetworks/kubevpn/master/samples/flat_log.png)
+
+[![GitHub Workflow][1]](https://github.com/KubeNetworks/kubevpn/actions)
+[![Go Version][2]](https://github.com/KubeNetworks/kubevpn/blob/master/go.mod)
+[![Go Report][3]](https://goreportcard.com/badge/github.com/KubeNetworks/kubevpn)
+[![Maintainability][4]](https://codeclimate.com/github/KubeNetworks/kubevpn/maintainability)
+[![GitHub License][5]](https://github.com/KubeNetworks/kubevpn/blob/main/LICENSE)
+[![Docker Pulls][6]](https://hub.docker.com/r/naison/kubevpn)
+[![Releases][7]](https://github.com/KubeNetworks/kubevpn/releases)
+
+[1]: https://img.shields.io/github/actions/workflow/status/KubeNetworks/kubevpn/release.yml?logo=github
+
+[2]: https://img.shields.io/github/go-mod/go-version/KubeNetworks/kubevpn?logo=go
+
+[3]: https://goreportcard.com/badge/github.com/KubeNetworks/kubevpn
+
+[4]: https://api.codeclimate.com/v1/badges/b5b30239174fc6603aca/maintainability
+
+[5]: https://img.shields.io/github/license/KubeNetworks/kubevpn
+
+[6]: https://img.shields.io/docker/pulls/naison/kubevpn?logo=docker
+
+[7]: https://img.shields.io/github/v/release/KubeNetworks/kubevpn?logo=smartthings
+
 # KubeVPN
 
-[中文](README_ZH.md) | [English](README.md) | [Wiki](https://github.com/wencaiwulue/kubevpn/wiki/Architecture)
+[中文](README_ZH.md) | [English](README.md) | [Wiki](https://github.com/KubeNetworks/kubevpn/wiki/Architecture)
 
 KubeVPN is Cloud Native Dev Environment, connect to kubernetes cluster network, you can access remote kubernetes
 cluster network, remote
@@ -11,13 +35,13 @@ container with same environment、volume、and network. you can develop your app
 
 #### Install from GitHub release
 
-[LINK](https://github.com/wencaiwulue/kubevpn/releases/latest)
+[LINK](https://github.com/KubeNetworks/kubevpn/releases/latest)
 
 #### Install from custom krew index
 
 ```shell
 (
-  kubectl krew index add kubevpn https://github.com/wencaiwulue/kubevpn.git && \
+  kubectl krew index add kubevpn https://github.com/KubeNetworks/kubevpn.git && \
   kubectl krew install kubevpn/kubevpn && kubectl kubevpn 
 ) 
 ```
@@ -26,7 +50,7 @@ container with same environment、volume、and network. you can develop your app
 
 ```shell
 (
-  git clone https://github.com/wencaiwulue/kubevpn.git && \
+  git clone https://github.com/KubeNetworks/kubevpn.git && \
   cd kubevpn && make kubevpn && ./bin/kubevpn
 )
 
@@ -35,7 +59,7 @@ container with same environment、volume、and network. you can develop your app
 ### Install bookinfo as demo application
 
 ```shell
-kubectl apply -f https://raw.githubusercontent.com/wencaiwulue/kubevpn/master/samples/bookinfo.yaml
+kubectl apply -f https://raw.githubusercontent.com/KubeNetworks/kubevpn/master/samples/bookinfo.yaml
 ```
 
 ## Functions
@@ -251,13 +275,13 @@ dns service ok
 Hello world!%
 ```
 
-### Dev mode in local
+### Dev mode in local 🐳
 
 Run the Kubernetes pod in the local Docker container, and cooperate with the service mesh to intercept the traffic with
 the specified header to the local, or all the traffic to the local.
 
 ```shell
-➜  ~ kubevpn dev deployment/authors -n kube-system --headers a=1 -p 9080:9080 -p 80:80
+➜  ~ kubevpn -n kube-system --headers a=1 -p 9080:9080 -p 80:80 dev deployment/authors
 got cidr from cache
 update ref count successfully
 traffic manager already exist, reuse it
@@ -327,7 +351,7 @@ de9e2f8ab57d        nginx:latest            "/docker-entrypoint.…"   5 seconds
 If you want to specify the image to start the container locally, you can use the parameter `--docker-image`. When the
 image does not exist locally, it will be pulled from the corresponding mirror warehouse. If you want to specify startup
 parameters, you can use `--entrypoint` parameter, replace it with the command you want to execute, such
-as `--entrypoint "tail -f /dev/null"`, for more parameters, see `kubevpn dev --help`.
+as `--entrypoint /bin/bash`, for more parameters, see `kubevpn dev --help`.
 
 ### DinD ( Docker in Docker ) use kubevpn in Docker
 
@@ -345,7 +369,7 @@ docker run -it --privileged -v /var/run/docker.sock:/var/run/docker.sock -v /tmp
 ➜  ~ docker run -it --privileged -c authors -v /var/run/docker.sock:/var/run/docker.sock -v /tmp:/tmp -v /Users/naison/.kube/vke:/root/.kube/config -v /Users/naison/Desktop/kubevpn/bin:/app naison/kubevpn:v1.1.21
 root@4d0c3c4eae2b:/# hostname
 4d0c3c4eae2b
-root@4d0c3c4eae2b:/# kubevpn dev deployment/authors -n kube-system --image naison/kubevpn:v1.1.21 --headers user=naison --network container:4d0c3c4eae2b --entrypoint "tail -f /dev/null"
+root@4d0c3c4eae2b:/# kubevpn -n kube-system --image naison/kubevpn:v1.1.21 --headers user=naison --network container:4d0c3c4eae2b --entrypoint /bin/bash dev deployment/authors
 
 ----------------------------------------------------------------------------------
     Warn: Use sudo to execute command kubevpn can not use user env KUBECONFIG.
@@ -471,8 +495,11 @@ in advance
 
 ## FAQ
 
-- What should I do if the dependent image cannot be pulled, or the inner environment cannot access docker.io?
-- Answer: In the network that can access docker.io, transfer the image in the command `kubevpn version` to your own
+### 1, What should I do if the dependent image cannot be pulled, or the inner environment cannot access docker.io?
+
+Answer: here are two solution to solve this problem
+
+- Solution 1: In the network that can access docker.io, transfer the image in the command `kubevpn version` to your own
   private image registry, and then add option `--image` to special image when starting the command.
   Example:
 
@@ -507,7 +534,40 @@ pod [kubevpn-traffic-manager] status is Running
 ...
 ```
 
-- When use `kubevpn dev`, but got error code 137, how to resolve ?
+- Solution 2: Use options `--transfer-image`, enable this flags will transfer image from default image to `--image`
+  special address automatically。
+  Example
+
+```shell
+➜  ~ kubevpn connect --transfer-image --image nocalhost-team-docker.pkg.coding.net/nocalhost/public/kubevpn:v1.1.33
+Password:
+v1.1.33: Pulling from naison/kubevpn
+Digest: sha256:970c0c82a2d9cbac1595edb56a31e8fc84e02712c00a7211762efee5f66ea70c
+Status: Image is up to date for naison/kubevpn:v1.1.33
+The push refers to repository [nocalhost-team-docker.pkg.coding.net/nocalhost/public/kubevpn]
+9d72fec6b077: Pushed
+12a6a77eb79e: Pushed
+c7d0f62ec57f: Pushed
+5605cea4b7c8: Pushed
+4231fec7b258: Pushed
+babe72b5fcae: Pushed
+6caa74b4bcf0: Pushed
+b8a36d10656a: Pushed
+v1.1.33: digest: sha256:1bc5e589bec6dc279418009b5e82ce0fd29a2c0e8b9266988964035ad7fbeba5 size: 2000
+got cidr from cache
+update ref count successfully
+traffic manager already exist, reuse it
+port forward ready
+tunnel connected
+dns service ok
+
++---------------------------------------------------------------------------+
+|    Now you can access resources in the kubernetes cluster, enjoy it :)    |
++---------------------------------------------------------------------------+
+
+```
+
+### 2, When use `kubevpn dev`, but got error code 137, how to resolve ?
 
 ```text
 dns service ok
@@ -528,14 +588,68 @@ clean up successful
 This is because of your docker-desktop required resource is less than pod running request resource, it OOM killed, so
 you can add more resource in your docker-desktop setting `Preferences --> Resources --> Memory`
 
-- I am using WSL( Windows Sub Linux ) Docker, when use mode `kubevpn dev`, can not connect to cluster network, how to
-  solve this problem?
+### 3, Using WSL( Windows Sub Linux ) Docker, when use mode `kubevpn dev`, can not connect to cluster network, how to solve this problem?
 
-Answer: this is because WSL'Docker using Windows's Network, so if even start a container in WSL, this container will
-not use WSL network, but use Windows network
+Answer:
+
+this is because WSL'Docker using Windows's Network, so if even start a container in WSL, this container will not use WSL
+network, but use Windows network
+
 Solution:
 
 - 1): install docker in WSL, not use Windows Docker-desktop
 - 2): use command `kubevpn connect` on Windows, and then startup `kubevpn dev` in WSL
 - 3): startup a container using command `kubevpn connect` on Windows, and then
   startup `kubevpn dev --network container:$CONTAINER_ID` in WSL
+
+### 4，After use command `kubevpn dev` enter develop mode，but can't assess kubernetes api-server，occur error `172.17.0.1:443 connect refusued`，how to solve this problem?
+
+Answer:
+
+Maybe k8s network subnet is conflict with docker subnet
+
+Solution:
+
+- Use option `--connect-mode container` to startup command `kubevpn dev`
+- Modify `~/.docker/daemon.json`, add not conflict subnet, eg: `"bip": "172.15.0.1/24"`.
+
+```shell
+➜  ~ cat ~/.docker/daemon.json
+{
+  "builder": {
+    "gc": {
+      "defaultKeepStorage": "20GB",
+      "enabled": true
+    }
+  },
+  "experimental": false,
+  "features": {
+    "buildkit": true
+  },
+  "insecure-registries": [
+  ],
+}
+```
+
+add subnet not conflict, eg: 172.15.0.1/24
+
+```shell
+➜  ~ cat ~/.docker/daemon.json
+{
+  "builder": {
+    "gc": {
+      "defaultKeepStorage": "20GB",
+      "enabled": true
+    }
+  },
+  "experimental": false,
+  "features": {
+    "buildkit": true
+  },
+  "insecure-registries": [
+  ],
+  "bip": "172.15.0.1/24"
+}
+```
+
+restart docker and retry

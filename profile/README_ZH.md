@@ -1,6 +1,30 @@
+![kubevpn](https://raw.githubusercontent.com/KubeNetworks/kubevpn/master/samples/flat_log.png)
+
+[![GitHub Workflow][1]](https://github.com/KubeNetworks/kubevpn/actions)
+[![Go Version][2]](https://github.com/KubeNetworks/kubevpn/blob/master/go.mod)
+[![Go Report][3]](https://goreportcard.com/badge/github.com/KubeNetworks/kubevpn)
+[![Maintainability][4]](https://codeclimate.com/github/KubeNetworks/kubevpn/maintainability)
+[![GitHub License][5]](https://github.com/KubeNetworks/kubevpn/blob/main/LICENSE)
+[![Docker Pulls][6]](https://hub.docker.com/r/naison/kubevpn)
+[![Releases][7]](https://github.com/KubeNetworks/kubevpn/releases)
+
+[1]: https://img.shields.io/github/actions/workflow/status/KubeNetworks/kubevpn/release.yml?logo=github
+
+[2]: https://img.shields.io/github/go-mod/go-version/KubeNetworks/kubevpn?logo=go
+
+[3]: https://goreportcard.com/badge/github.com/KubeNetworks/kubevpn
+
+[4]: https://api.codeclimate.com/v1/badges/b5b30239174fc6603aca/maintainability
+
+[5]: https://img.shields.io/github/license/KubeNetworks/kubevpn
+
+[6]: https://img.shields.io/docker/pulls/naison/kubevpn?logo=docker
+
+[7]: https://img.shields.io/github/v/release/KubeNetworks/kubevpn?logo=smartthings
+
 # KubeVPN
 
-[English](README.md) | [中文](README_ZH.md) | [维基](https://github.com/wencaiwulue/kubevpn/wiki/%E6%9E%B6%E6%9E%84)
+[English](README.md) | [中文](README_ZH.md) | [维基](https://github.com/KubeNetworks/kubevpn/wiki/%E6%9E%B6%E6%9E%84)
 
 KubeVPN 是一个云原生开发工具, 可以在本地连接云端 kubernetes 网络的工具，可以在本地直接访问远端集群的服务。也可以在远端集群访问到本地服务，便于调试及开发。同时还可以使用开发模式，直接在本地使用 Docker
 将远程容器运行在本地。
@@ -9,13 +33,13 @@ KubeVPN 是一个云原生开发工具, 可以在本地连接云端 kubernetes �
 
 #### 从 Github release 下载编译好的二进制文件
 
-[链接](https://github.com/wencaiwulue/kubevpn/releases/latest)
+[链接](https://github.com/KubeNetworks/kubevpn/releases/latest)
 
 #### 从 自定义 Krew 仓库安装
 
 ```shell
 (
-  kubectl krew index add kubevpn https://github.com/wencaiwulue/kubevpn.git && \
+  kubectl krew index add kubevpn https://github.com/KubeNetworks/kubevpn.git && \
   kubectl krew install kubevpn/kubevpn && kubectl kubevpn 
 ) 
 ```
@@ -24,7 +48,7 @@ KubeVPN 是一个云原生开发工具, 可以在本地连接云端 kubernetes �
 
 ```shell
 (
-  git clone https://github.com/wencaiwulue/kubevpn.git && \
+  git clone https://github.com/KubeNetworks/kubevpn.git && \
   cd kubevpn && make kubevpn && ./bin/kubevpn
 )
 
@@ -33,7 +57,7 @@ KubeVPN 是一个云原生开发工具, 可以在本地连接云端 kubernetes �
 #### 安装 bookinfo 作为 demo 应用
 
 ```shell
-kubectl apply -f https://raw.githubusercontent.com/wencaiwulue/kubevpn/master/samples/bookinfo.yaml
+kubectl apply -f https://raw.githubusercontent.com/KubeNetworks/kubevpn/master/samples/bookinfo.yaml
 ```
 
 ## 功能
@@ -249,12 +273,12 @@ dns service ok
 Hello world!%
 ```
 
-### 本地进入开发模式
+### 本地进入开发模式 🐳
 
 将 Kubernetes pod 运行在本地的 Docker 容器中，同时配合 service mesh, 拦截带有制定 header 的流量到本地，或者所有的流量到本地。这个开发模式依赖于本地 Docker .
 
 ```shell
-➜  ~ kubevpn dev deployment/authors -n kube-system --headers a=1 -p 9080:9080 -p 80:80
+➜  ~ kubevpn -n kube-system --headers a=1 -p 9080:9080 -p 80:80 dev deployment/authors
 got cidr from cache
 update ref count successfully
 traffic manager already exist, reuse it
@@ -320,7 +344,7 @@ de9e2f8ab57d        nginx:latest            "/docker-entrypoint.…"   5 seconds
 ```
 
 如果你想指定在本地启动容器的镜像, 可以使用参数 `--docker-image`, 当本地不存在该镜像时, 会从对应的镜像仓库拉取。如果你想指定启动参数，可以使用 `--entrypoint`
-参数，替换为你想要执行的命令，比如 `--entrypoint "tail -f /dev/null"`, 更多使用参数，请参见 `kubevpn dev --help`.
+参数，替换为你想要执行的命令，比如 `--entrypoint /bin/bash`, 更多使用参数，请参见 `kubevpn dev --help`.
 
 ### DinD ( Docker in Docker ) 在 Docker 中使用 kubevpn
 
@@ -337,7 +361,7 @@ docker run -it --privileged -v /var/run/docker.sock:/var/run/docker.sock -v /tmp
 ➜  ~ docker run -it --privileged -c authors -v /var/run/docker.sock:/var/run/docker.sock -v /tmp:/tmp -v /Users/naison/.kube/config:/root/.kube/config naison/kubevpn:v1.1.21
 root@4d0c3c4eae2b:/# hostname
 4d0c3c4eae2b
-root@4d0c3c4eae2b:/# kubevpn dev deployment/authors -n kube-system --image naison/kubevpn:v1.1.21 --headers user=naison --network container:4d0c3c4eae2b --entrypoint "tail -f /dev/null"
+root@4d0c3c4eae2b:/# kubevpn -n kube-system --image naison/kubevpn:v1.1.21 --headers user=naison --network container:4d0c3c4eae2b --entrypoint /bin/bash  dev deployment/authors
 
 ----------------------------------------------------------------------------------
     Warn: Use sudo to execute command kubevpn can not use user env KUBECONFIG.
@@ -462,8 +486,11 @@ Windows
 
 ## 问答
 
-- 依赖的镜像拉不下来，或者内网环境无法访问 docker.io 怎么办？
-- 答：在可以访问 docker.io 的网络中，将命令 `kubevpn version` 中的 image 镜像， 转存到自己的私有镜像仓库，然后启动命令的时候，加上 `--image 新镜像` 即可。
+### 1，依赖的镜像拉不下来，或者内网环境无法访问 docker.io 怎么办？
+
+答：有两种方法可以解决
+
+- 第一种，在可以访问 docker.io 的网络中，将命令 `kubevpn version` 中的 image 镜像， 转存到自己的私有镜像仓库，然后启动命令的时候，加上 `--image 新镜像` 即可。
   例如:
 
 ``` shell
@@ -497,7 +524,39 @@ pod [kubevpn-traffic-manager] status is Running
 ...
 ```
 
-- 在使用 `kubevpn dev` 进入开发模式的时候,有出现报错 137, 改怎么解决 ?
+- 第二种，使用选项 `--transfer-image`, 这个选项将会自动转存镜像到选项 `--image` 指定的地址。
+  例如：
+
+```shell
+➜  ~ kubevpn connect --transfer-image --image nocalhost-team-docker.pkg.coding.net/nocalhost/public/kubevpn:v1.1.33
+Password:
+v1.1.33: Pulling from naison/kubevpn
+Digest: sha256:970c0c82a2d9cbac1595edb56a31e8fc84e02712c00a7211762efee5f66ea70c
+Status: Image is up to date for naison/kubevpn:v1.1.33
+The push refers to repository [nocalhost-team-docker.pkg.coding.net/nocalhost/public/kubevpn]
+9d72fec6b077: Pushed
+12a6a77eb79e: Pushed
+c7d0f62ec57f: Pushed
+5605cea4b7c8: Pushed
+4231fec7b258: Pushed
+babe72b5fcae: Pushed
+6caa74b4bcf0: Pushed
+b8a36d10656a: Pushed
+v1.1.33: digest: sha256:1bc5e589bec6dc279418009b5e82ce0fd29a2c0e8b9266988964035ad7fbeba5 size: 2000
+got cidr from cache
+update ref count successfully
+traffic manager already exist, reuse it
+port forward ready
+tunnel connected
+dns service ok
+
++---------------------------------------------------------------------------+
+|    Now you can access resources in the kubernetes cluster, enjoy it :)    |
++---------------------------------------------------------------------------+
+
+```
+
+### 2，在使用 `kubevpn dev` 进入开发模式的时候,有出现报错 137, 改怎么解决 ?
 
 ```text
 dns service ok
@@ -518,7 +577,7 @@ clean up successful
 这是因为你的 `Docker-desktop` 声明的资源, 小于 container 容器启动时所需要的资源, 因此被 OOM 杀掉了, 你可以增加 `Docker-desktop` 对于 resources
 的设置, 目录是：`Preferences --> Resources --> Memory`
 
-- 我在使用 WSL( Windows Sub Linux ) Docker, 当我在使用命令 `kubevpn dev` 进入开发模式的时候, 在 terminal 中无法提示链接集群网络, 这是为什么, 如何解决?
+### 3，使用 WSL( Windows Sub Linux ) Docker, 用命令 `kubevpn dev` 进入开发模式的时候, 在 terminal 中无法提示链接集群网络, 这是为什么, 如何解决?
 
 答案: 这是因为 WSL 的 Docker 使用的是 主机 Windows 的网络, 所以即便在 WSL 中启动 container, 这个 container 不会使用 WSL 的网络，而是使用 Windows 的网络。
 解决方案:
@@ -527,3 +586,53 @@ clean up successful
 - 2): 在主机 Windows 使用命令 `kubevpn connect`, 然后在 WSL 中使用 `kubevpn dev` 进入开发模式
 - 3): 在主机 Windows 上启动一个 container，在 container 中使用命令 `kubevpn connect`, 然后在 WSL
   中使用 `kubevpn dev --network container:$CONTAINER_ID`
+
+### 4，在使用 `kubevpn dev` 进入开发模式后，无法访问容器网络，出现错误 `172.17.0.1:443 connect refusued`，该如何解决？
+
+答案：大概率是因为 k8s 容器网络和 docker 网络网段冲突了。
+
+解决方案：
+
+- 使用参数 `--connect-mode container` 在容器中链接，也可以解决此问题
+- 可以修改文件 `~/.docker/daemon.json` 增加不冲突的网络，例如 `"bip": "172.15.0.1/24"`.
+
+```shell
+➜  ~ cat ~/.docker/daemon.json
+{
+  "builder": {
+    "gc": {
+      "defaultKeepStorage": "20GB",
+      "enabled": true
+    }
+  },
+  "experimental": false,
+  "features": {
+    "buildkit": true
+  },
+  "insecure-registries": [
+  ],
+}
+```
+
+增加不冲突的网段
+
+```shell
+➜  ~ cat ~/.docker/daemon.json
+{
+  "builder": {
+    "gc": {
+      "defaultKeepStorage": "20GB",
+      "enabled": true
+    }
+  },
+  "experimental": false,
+  "features": {
+    "buildkit": true
+  },
+  "insecure-registries": [
+  ],
+  "bip": "172.15.0.1/24"
+}
+```
+
+重启 docker，重新操作即可
