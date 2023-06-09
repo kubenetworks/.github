@@ -24,7 +24,7 @@
 
 # KubeVPN
 
-[English](README.md) | [中文](README_ZH.md) | [维基](https://github.com/KubeNetworks/kubevpn/wiki/%E6%9E%B6%E6%9E%84)
+[English](profile/README.md) | [中文](profile/README_ZH.md) | [维基](https://github.com/KubeNetworks/kubevpn/wiki/%E6%9E%B6%E6%9E%84)
 
 KubeVPN 是一个云原生开发工具, 可以在本地连接云端 kubernetes 网络的工具，可以在本地直接访问远端集群的服务。也可以在远端集群访问到本地服务，便于调试及开发。同时还可以使用开发模式，直接在本地使用 Docker
 将远程容器运行在本地。

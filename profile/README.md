@@ -24,7 +24,7 @@
 
 # KubeVPN
 
-[中文](README_ZH.md) | [English](README.md) | [Wiki](https://github.com/KubeNetworks/kubevpn/wiki/Architecture)
+[中文](profile/README_ZH.md) | [English](profile/README.md) | [Wiki](https://github.com/KubeNetworks/kubevpn/wiki/Architecture)
 
 KubeVPN is Cloud Native Dev Environment, connect to kubernetes cluster network, you can access remote kubernetes
 cluster network, remote
